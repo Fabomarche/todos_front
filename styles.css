@@ -12,7 +12,52 @@
     padding: 10px;
 }
 
+.login{
+    display: none;
+}
+
+.register, .login{
+    width: 100%;
+    max-width: 540px;
+    background: #fff;
+    margin: 100px auto 20px;
+    padding: 30px 30px;
+    border-radius: 10px;
+}
+
+
+
+.register h2, .login h2{
+    color: #002765;
+    margin-bottom: 20px;
+}
+
+.auth-button-container{
+    text-align: right;
+
+}
+
+.auth-switch{
+    margin-top: 8px;
+}
+
+.header{
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px ;
+}
+
+#logout-button{
+    background: #999;
+}
+
+#logout-button:hover{
+    background: #0041a8;
+}
+
 .todo{
+    display: none;
     width: 100%;
     max-width: 540px;
     background: #fff;
