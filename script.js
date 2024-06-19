@@ -37,7 +37,6 @@ const islogged = () => {
             todoDiv.style.display = 'block';
             loginForm.style.display = 'none';
             registerForm.style.display = 'none';
-            updateHeader();
         } else {
             todoDiv.style.display = 'none';
             registerForm.style.display = 'block';
@@ -51,6 +50,7 @@ window.onload = islogged;
 
 const logout = () => {
     localStorage.removeItem('user');
+    listContainer.innerHTML = ''
     updateHeader();
     islogged();
 }
@@ -107,11 +107,12 @@ const login = () => {
     .then(response => response.json())
     .then(data => {
         if(data.error){
-            alert("Invalid user or password")
+            alert(data.error)
         }else{
             console.log('User logged in:', data);
             localStorage.setItem('user', JSON.stringify(data));
             islogged()
+            showAllTodos()
         }
     })
     .catch((error) => {
@@ -137,14 +138,18 @@ const priorityValues = {
 
 
 const showAllTodos = () => {
+    const userId = JSON.parse(localStorage.getItem('user'))._id;
 
-    fetch('http://localhost:8080/todos', {
-        method: 'GET'
+    fetch(`http://localhost:8080/todos?user=${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     })
     .then(response => response.json())
     .then(data => {
         const sortOrder = document.getElementById("sort-select").value;
-
+        
         data.sort((a, b) => {
             if (sortOrder === "asc") {
                 return priorityValues[a.priority] - priorityValues[b.priority];
@@ -152,7 +157,7 @@ const showAllTodos = () => {
                 return priorityValues[b.priority] - priorityValues[a.priority];
             }
         });
-
+        
         listContainer.innerHTML = '';
 
         data.forEach(task => {
@@ -184,12 +189,14 @@ const addTask = () => {
     if(inputBox.value === ''){
         alert("You must write the task")
     }else{
-        fetch('http://localhost:8080/todos', {
+        const userId = JSON.parse(localStorage.getItem('user'))._id;
+
+        fetch(`http://localhost:8080/todos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ title: inputBox.value, priority: prioritySelect.value }),
+            body: JSON.stringify({ title: inputBox.value, priority: prioritySelect.value, user: userId }),
         })
         .then(response => response.json())
         .then(data => {
@@ -207,6 +214,8 @@ const addTask = () => {
             edit.innerText = "edit"
             edit.classList.add("edit-button")
             li.append(edit)
+
+            showAllTodos()
         })
         .catch((error) => {
             console.error('Error creating todo:', error);
