@@ -79,6 +79,7 @@
 }
 
 .row{
+    flex-wrap: wrap;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -206,4 +207,37 @@ ul li.checked::before{
 
 .high {
     background-color: #fae8eb; 
+}
+
+
+@media (max-width: 600px) {
+    .row {
+        flex-direction: column;
+        text-align: left;
+        padding: 10px;
+    }
+
+    input, select, button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    input, select {
+        font-size: 14px;
+        padding: 5px;
+    }
+
+    li input{
+        width: 70%;
+        margin-bottom: 0!important;
+    }
+
+    label{
+        width: 100%;
+        padding-left: 10px;
+    }
+
+    button {
+        padding: 8px 25px;
+        font-size: 14px;
+    }
 }
