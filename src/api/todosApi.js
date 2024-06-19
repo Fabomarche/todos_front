@@ -1,144 +1,9 @@
-const inputBox = document.getElementById("input-box")
-const listContainer = document.getElementById("list-container")
-const prioritySelect = document.getElementById("priority-select");
+import { getUserId } from '../utils/storage.js';
+import { priorityValues } from '../utils/constants.js';
+import { listContainer } from '../components/todoList.js';
 
-const registerUsername = document.getElementById("register-username");
-const registerPassword = document.getElementById("register-password");
-
-const loginUsername = document.getElementById("login-username");
-const loginPassword = document.getElementById("login-password");
-
-const registerForm = document.querySelector('.register');
-const loginForm = document.querySelector('.login');
-
-const todoDiv = document.querySelector('.todo');
-
-const userGreeting = document.getElementById("user-greeting");
-const header = document.querySelector(".header")
-
-const updateHeader = () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-        userGreeting.textContent = `Welcome, ${user.username}!`;
-        header.style.display = 'flex';
-    } else {
-        userGreeting.textContent = '';
-        header.style.display = 'none';
-    }
-}
-
-
-
-
-const islogged = () => {
-    
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (user) {
-            todoDiv.style.display = 'block';
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'none';
-        } else {
-            todoDiv.style.display = 'none';
-            registerForm.style.display = 'block';
-
-        }
-   updateHeader();
-}
-
-
-window.onload = islogged;
-
-const logout = () => {
-    localStorage.removeItem('user');
-    listContainer.innerHTML = ''
-    updateHeader();
-    islogged();
-}
-
-const showLogin = () => {
-    registerForm.style.display = 'none';
-    loginForm.style.display = 'block';
-}
-
-const showRegister = () => {
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'block';
-}
-
-showRegister()
-
-
-const register = () => {
-    fetch('http://localhost:8080/users', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: registerUsername.value, password: registerPassword.value }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.error){
-            alert(data.error)
-        }else{
-            console.log('User registered:', data);
-            alert("User created")
-            showLogin()
-        }
-    })
-    .catch((error) => {
-        console.error('Error registering user:', error);
-    });
-
-    registerUsername.value = "";
-    registerPassword.value = "";
-
-    
-}
-
-const login = () => {
-    fetch('http://localhost:8080/users/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: loginUsername.value, password: loginPassword.value }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.error){
-            alert(data.error)
-        }else{
-            console.log('User logged in:', data);
-            localStorage.setItem('user', JSON.stringify(data));
-            islogged()
-            showAllTodos()
-        }
-    })
-    .catch((error) => {
-        console.error('Error logging in:', error);
-
-    });
-
-    loginUsername.value = "";
-    loginPassword.value = "";
-
-    
-}
-
-
-
-/////////////////TODOS
-
-const priorityValues = {
-    "Low": 1,
-    "Medium": 2,
-    "High": 3
-};
-
-
-const showAllTodos = () => {
-    const userId = JSON.parse(localStorage.getItem('user'))._id;
+export const showAllTodos = () => {
+    const userId = getUserId();
 
     fetch(`http://localhost:8080/todos?user=${userId}`, {
         method: 'GET',
@@ -184,12 +49,14 @@ const showAllTodos = () => {
     });
 }
 
+export const addTask = () => {
+    const inputBox = document.getElementById("input-box");
+    const prioritySelect = document.getElementById("priority-select");
 
-const addTask = () => {
     if(inputBox.value === ''){
         alert("You must write the task")
     }else{
-        const userId = JSON.parse(localStorage.getItem('user'))._id;
+        const userId = getUserId();
 
         fetch(`http://localhost:8080/todos`, {
             method: 'POST',
@@ -226,8 +93,7 @@ const addTask = () => {
     prioritySelect.value = "Medium";
 }
 
-
-listContainer.addEventListener("click", e => {
+export const handleListClick = (e) => {
     if(e.target.classList.contains("delete-button")){
         const taskId = e.target.parentElement.getAttribute('data-id');
   
@@ -297,10 +163,4 @@ listContainer.addEventListener("click", e => {
             console.error('Error updating todo:', error);
         });
     }
-}, false)
-
-
-
-
-
-showAllTodos()
+}

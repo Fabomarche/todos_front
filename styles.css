@@ -224,6 +224,7 @@ ul li.checked::before{
     input, select {
         font-size: 14px;
         padding: 5px;
+        border-bottom: 1px solid #c5c5c5;
     }
 
     li input{
@@ -239,5 +240,9 @@ ul li.checked::before{
     button {
         padding: 8px 25px;
         font-size: 14px;
+    }
+
+    #logout-button{
+        width: auto;
     }
 }
