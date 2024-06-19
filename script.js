@@ -1,5 +1,6 @@
 const inputBox = document.getElementById("input-box")
 const listContainer = document.getElementById("list-container")
+const prioritySelect = document.getElementById("priority-select");
 
 const registerUsername = document.getElementById("register-username");
 const registerPassword = document.getElementById("register-password");
@@ -128,6 +129,13 @@ const login = () => {
 
 /////////////////TODOS
 
+const priorityValues = {
+    "Low": 1,
+    "Medium": 2,
+    "High": 3
+};
+
+
 const showAllTodos = () => {
 
     fetch('http://localhost:8080/todos', {
@@ -135,10 +143,23 @@ const showAllTodos = () => {
     })
     .then(response => response.json())
     .then(data => {
+        const sortOrder = document.getElementById("sort-select").value;
+
+        data.sort((a, b) => {
+            if (sortOrder === "asc") {
+                return priorityValues[a.priority] - priorityValues[b.priority];
+            } else {
+                return priorityValues[b.priority] - priorityValues[a.priority];
+            }
+        });
+
+        listContainer.innerHTML = '';
+
         data.forEach(task => {
             let li = document.createElement("li");
             li.innerHTML = task.title;
             li.setAttribute('data-id', task._id);
+            li.classList.add(task.priority.toLowerCase());
 
             let deleteX = document.createElement("span");
             deleteX.innerHTML = "\u00d7";
@@ -168,7 +189,7 @@ const addTask = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ title: inputBox.value }),
+            body: JSON.stringify({ title: inputBox.value, priority: prioritySelect.value }),
         })
         .then(response => response.json())
         .then(data => {
@@ -193,6 +214,7 @@ const addTask = () => {
     }
 
     inputBox.value=""
+    prioritySelect.value = "Medium";
 }
 
 
